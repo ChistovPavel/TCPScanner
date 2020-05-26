@@ -9,10 +9,19 @@ import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 
-public class Octet {
+/**
+ * Класс предназначен для хранения информации об октетах IP адреса. Данный класс используется для парсинга входных параметров командной строки
+ * */
+public class Octet
+{
     @Getter @Setter private ArrayList<Integer> value;
     private static Logger logger = LogManager.getLogger(NetScanner.class);
 
+    /**
+     * Конструктор класса
+     * @param octet строковое представление октета (должно быть в интервале от 0 жо 255).
+     * @exception OctetParseException throws в случае нарушения формата записи осктета или диапозона октетов
+     * */
     public Octet(String octet) throws OctetParseException {
         this.value = new ArrayList<Integer>();
         if (octet.contains("-"))
@@ -73,14 +82,24 @@ public class Octet {
         }
     }
 
+    /**
+     * Возвращает длину диапозона отктетов
+     * @return {@link Integer} длина диапозона октетов
+     * */
     public Integer getSize(){return this.value.size();}
 
-    public Integer getOctetValue(Integer index, Integer size)
+    /**
+     * Возвращает значение октета
+     * @param index параметр, используемый для получения значения. Алгоритм получения описан в {@link HostRange#getAllHosts()};
+     * @param inSize параметр, используемый для получения значения. Алгоритм получения описан в {@link HostRange#getAllHosts()}.
+     * @return {@link Integer} значения октета по заданным параметрам
+     * */
+    public Integer getOctetValue(Integer index, Integer inSize)
     {
         int newIndex = 0;
 
-        if (size == 1) newIndex = index%(this.value.size());
-        else newIndex = index/size;
+        if (inSize == 1) newIndex = index%(this.value.size());
+        else newIndex = index/inSize;
 
         return (this.value.get(newIndex));
     }

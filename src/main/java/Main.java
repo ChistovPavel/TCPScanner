@@ -1,6 +1,7 @@
 import Exceptions.*;
 import NetScanner.InputHandler.NetScannerInputParser;
 import NetScanner.NetScanner;
+import org.apache.commons.cli.ParseException;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -26,6 +27,9 @@ public class Main
         }
         catch (ParseInputException e) {
             System.err.println(new StringBuilder().append(e.getMessage()).append(": ").append(e.getValue()));
+            return;
+        } catch (ParseException e) {
+            System.err.println(e.getMessage());
             return;
         }
 

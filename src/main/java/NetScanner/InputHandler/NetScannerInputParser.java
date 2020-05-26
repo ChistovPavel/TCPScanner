@@ -8,13 +8,15 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
-public class NetScannerInputParser{
-
+/**
+ * Класс предназначен для прасинга параметров командной строки
+ **/
+public class NetScannerInputParser
+{
     private static Logger logger = LogManager.getLogger(NetScannerInputParser.class);
 
     public final static Option hostOption = Option.builder("h")
@@ -63,7 +65,12 @@ public class NetScannerInputParser{
     @Getter private ArrayList<String> hosts;
     @Getter private ArrayList<Integer> ports;
 
-    public NetScannerInputParser(String[] args) throws ParseInputException
+    /**
+     * Конструктор класса
+     * @param args аргументы командной строки.
+     * @exception ParseInputException throws в случае ошибки парсинга входных параметров (отсутсвие обязательных параметров -p или -h).
+     * */
+    public NetScannerInputParser(String[] args) throws ParseInputException, ParseException
     {
         Options options = new Options();
         options.addOption(hostOption);
@@ -71,12 +78,8 @@ public class NetScannerInputParser{
         options.addOption(threadOption);
         options.addOption(timeoutOption);
         options.addOption(pathOption);
-        try {
-            this.commandLine = new DefaultParser().parse(options, args);
-        } catch (ParseException e) {
-            logger.error("Parse input data exception", e);
-            throw new ParseInputException(e.getMessage(), Arrays.toString(args));
-        }
+
+        this.commandLine = new DefaultParser().parse(options, args);
 
         this.hosts = new ArrayList<String>();
         this.ports = new ArrayList<Integer>();
@@ -89,8 +92,12 @@ public class NetScannerInputParser{
         logger.info("Stop parse ports");
     }
 
-    private void parseHosts() throws ParseInputException{
-
+    /**
+     * Парсинг IP адресов хостов
+     * @exception ParseInputException throws в случае нарушения формата записи диапазона хостов
+     * */
+    private void parseHosts() throws ParseInputException
+    {
         String[] hostsArray = this.commandLine.getOptionValues(hostOption.getOpt());
 
         for (String host : hostsArray)
@@ -101,7 +108,13 @@ public class NetScannerInputParser{
         }
     }
 
-    private void parsePorts() throws PortParseException{
+
+    /**
+     * Парсинг портов
+     * @exception PortParseException throws в случае нарушения формата записи диапазона портов
+     * */
+    private void parsePorts() throws PortParseException
+    {
         String[] portsArray = this.commandLine.getOptionValues(portOption.getOpt());
 
         for (String port : portsArray)
@@ -112,7 +125,11 @@ public class NetScannerInputParser{
         }
     }
 
-
+    /**
+     * Получение всех портов диапазона
+     * @return список {@link ArrayList} всех значений портов диапазона
+     * @exception PortParseException throws в случае нарушения формата записи диапазона портов
+     * */
     private ArrayList<Integer> getAllPorts(String port) throws PortParseException {
         ArrayList<Integer> ports = new ArrayList<Integer>();
         if (port.contains("-"))
@@ -174,17 +191,29 @@ public class NetScannerInputParser{
         }
         return ports;
     }
-
+    /**
+     * Получение параметра времени, которое будет отведено на одно подключение
+     * @return {@link Integer} время в миллисекундах или null, если данный параметр не указан
+     * */
     public Integer getTimeout()
     {
         return this.getNumberValue(timeoutOption);
     }
 
+    /**
+     * Получение параметра количества потоков
+     * @return {@link Integer} количество потоков или null, если данный параметр не указан
+     * */
     public Integer getThreads()
     {
         return this.getNumberValue(threadOption);
     }
 
+    /**
+     * Получение целочисленного значения из аргументов командной строки по ключу
+     * @param option {@link Option} задает ключ, по которому будут извлекаться данные.
+     * @return соответствующее целочисленное значение
+     * */
     private Integer getNumberValue(Option option)
     {
         if (this.commandLine.hasOption(option.getOpt()))
@@ -203,6 +232,10 @@ public class NetScannerInputParser{
         return null;
     }
 
+    /**
+     * Получение пути выходного файла из аргументов командной строки по ключу
+     * @return {@link String} путь к файлу или null, если данный параметр не указан
+     * */
     public String getPath()
     {
         if (this.commandLine.hasOption(pathOption.getOpt()))
@@ -212,6 +245,11 @@ public class NetScannerInputParser{
         return null;
     }
 
+    /**
+     * Парсинг аргументов командной строки.
+     * @param data аргументы командной строки, представленные в виде одной строки.
+     * @return список {@link ArrayList}, который содержит все переданные IP адреса хостов
+     * */
     @Deprecated
     public static ArrayList<String> parseHosts(String data)
     {
@@ -235,9 +273,15 @@ public class NetScannerInputParser{
         return hosts;
     }
 
+    /**
+     * Получение всех возможных комбинаций IP адресов диапазона
+     * @param hosts массив строковых представлений IP адресов;
+     * @param array_hosts список {@link List}, в который будут помещаться все возможные комбинации диапазона IP дресов.
+     * @exception ParseInputException throws в случае нарушения формата записи диапазона хостов
+     * */
     @Deprecated
-    private static void getAllHosts(String[] hosts, ArrayList<String> array_hosts) throws ParseInputException {
-
+    private static void getAllHosts(String[] hosts, List<String> array_hosts) throws ParseInputException
+    {
         if (hosts.length <= 0) throw new ParseInputException("Input list of IP is null", null);
 
         ArrayList<String>[] components = new ArrayList[]{
@@ -298,6 +342,11 @@ public class NetScannerInputParser{
         }
     }
 
+    /**
+     * Парсинг аргументов командной строки.
+     * @param data аргументы командной строки, представленные в виде одной строки.
+     * @return список {@link ArrayList}, который содержит все переданные порты
+     * */
     @Deprecated
     public static ArrayList<Integer> parsePorts(String data)
     {
@@ -322,6 +371,12 @@ public class NetScannerInputParser{
         return ports;
     }
 
+    /**
+     * Получение всех возможных комбинаций портов диапазона
+     * @param ports массив строковых представлений диапазона портов;
+     * @param array_ports список {@link List}, в который будут помещаться все возможные комбинации портов диапазона.
+     * @exception ParseInputException throws в случае нарушения формата записи диапазона портов
+     * */
     @Deprecated
     private static void getAllPorts(String[] ports, ArrayList<Integer> array_ports) throws ParseInputException {
 
@@ -346,6 +401,11 @@ public class NetScannerInputParser{
         }
     }
 
+    /**
+     * Получение параметра количества потоков
+     * @param data аргументы командной строки, представленные в виде одной строки.
+     * @return {@link Integer} количество потоков
+     * */
     @Deprecated
     public static Integer getThreads(String data)
     {
@@ -356,6 +416,11 @@ public class NetScannerInputParser{
                                                                     "$)");
     }
 
+    /**
+     * Получение параметра времени, которое будет отведено на одно подключение
+     * @param data аргументы командной строки, представленные в виде одной строки.
+     * @return {@link Integer} время в миллисекундах
+     * */
     @Deprecated
     public static Integer getTime(String data)
     {
@@ -366,6 +431,12 @@ public class NetScannerInputParser{
                                                                  "$)");
     }
 
+    /**
+     * Получение целочисленного значения из аргументов командной строки по ключу
+     * @param data аргументы командной строки, представленные в виде одной строки;
+     * @param regex регулярное выражение, которое определяет параметры получения данных из аргументов командной строки.
+     * @return соответствующее целочисленное значение
+     * */
     @Deprecated
     private static Integer getSingleNumber(String data, String regex)
     {
@@ -381,6 +452,11 @@ public class NetScannerInputParser{
         }
     }
 
+    /**
+     * Получение пути выходного файла из аргументов командной строки по ключу
+     *  @param data аргументы командной строки, представленные в виде одной строки.
+     * @return {@link String} путь к файлу
+     * */
     @Deprecated
     public static String getPath(String data)
     {
@@ -393,6 +469,12 @@ public class NetScannerInputParser{
         return tmp.replaceAll("(^.*?\"|\".*?$)", "");
     }
 
+    /**
+     * Метод выполнения заданного регулярного выражения
+     * @param regex резулярное выражение;
+     * @param data данные, к которым регулярное выражение будет применено.
+     * @return {@link String} результат применения регулярного выражения
+     * */
     @Deprecated
     private static String RegEx(String regex, String data)
     {

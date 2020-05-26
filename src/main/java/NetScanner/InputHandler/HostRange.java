@@ -7,14 +7,25 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class HostRange {
-
+/**
+ * Класс предназначен для хранения информации об IP адресе хоста. Данный класс используется для парсинга входных параметров командной строки
+ * */
+public class HostRange
+{
     private ArrayList<Octet> value;
     private Integer allCombinationsNumber;
     private static Logger logger = LogManager.getLogger(NetScanner.class);
 
-    public HostRange(String host) throws HostRangeParseException, OctetParseException {
+    /**
+     * Конструктор класса
+     * @param host строковое представление IP адреса хоста
+     * @exception HostRangeParseException throws в случае нарушения формата записи IP адреса или диапозона IP адресов
+     * @exception OctetParseException throws в случае нарушения формата записи октета IP адреса
+     * */
+    public HostRange(String host) throws HostRangeParseException, OctetParseException
+    {
         String[] octets = host.split("\\.");
 
         if (octets.length != 4)
@@ -35,7 +46,11 @@ public class HostRange {
         }
     }
 
-    public ArrayList<String> getAllHosts()
+    /**
+     * Получение всех возможных комбинация диапазона IP адресов
+     * @return список {@link List} строковых представлений диапазона IP адресов
+     * */
+    public List<String> getAllHosts()
     {
         ArrayList<String> hosts = new ArrayList<String>();
 
